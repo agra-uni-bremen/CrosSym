@@ -1,7 +1,7 @@
 #pragma once
 
-#include "sc_time.h"
-#include "sc_simcontext.h"
+#include <sysc/kernel/sc_time.h>
+#include <sysc/kernel/sc_simcontext.h>
 #include <functional>
 
 namespace sc_core
@@ -15,13 +15,21 @@ namespace sc_core
 
 struct sc_event
 {
-    std::function<Thread>* waitingThread = nullptr;
+	std::vector<PID> staticProcesses;
+	std::vector<PID> waitingProcesses;
+
+	EventID eventID = -1;
+
+private:
+	std::vector<PID> getProcesses();
 
 public:
 	//notify for use in benchmark to require a certain reaction
-    void notify(const sc_time& time);
-    //sc_time getWaketime();
-    void cancel();
+	void notify(const sc_time& time);
+	void notify();
+	//sc_time getWaketime();
+	void cancel();
+	void addProcess(PID process_id);
 };
 
 

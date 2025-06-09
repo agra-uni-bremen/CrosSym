@@ -26,7 +26,7 @@ cd $SOURCEFOLDER
 
 echo "first, build the normal systemc (also for include files)"
 mkdir -p native-build && cd native-build
-../configure --quiet CC=clang CCFLAGS="" CXX=clang++ CXXFLAGS="-std=c++17 -stdlib=libc++" --prefix=$PREFIX --with-arch-suffix=-native
+../configure --quiet CC=clang CMAKE_CXX_STANDARD="14" CCFLAGS="" CXX=clang++ CXXFLAGS="-std=c++14 -stdlib=libc++" --prefix=$PREFIX --with-arch-suffix=-native --disable-async-updates --enable-pthreads
 make --no-print-directory -j$(nproc)
 make -s install
 
@@ -36,13 +36,13 @@ LIBNAME=llvm
 echo "Now building bytecode manually ($LIBNAME)"
 mkdir -p $LIBNAME-build && cd $LIBNAME-build
 # not that important what is set here, as we overwrite it anyways in cmake command
-../configure --quiet --target=x86_64-pc-linux-gnu CC=clang CFLAGS='' CXX=clang++ CXXFLAGS='-std=c++17' --prefix=$PREFIX --with-arch-suffix=-$LIBNAME
-cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -D CMAKE_CXX_FLAGS="-DUSE_KLEE -fcxx-exceptions -stdlib=libc++ -std=c++17 -emit-llvm -flto -c -Xclang -disable-O0-optnone" -D CMAKE_CXX_CREATE_STATIC_LIBRARY="llvm-link <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>" -D CMAKE_CXX_LINK_EXECUTABLE="llvm-link <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> -o <TARGET>" -DCMAKE_LINKER=llvm-link -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_TO_LIB_TARGET_ARCH_DIR=$LIBNAME ..
+../configure --quiet --target=x86_64-pc-linux-gnu CC=clang CMAKE_CXX_STANDARD="14" CFLAGS='' CXX=clang++ CXXFLAGS='-std=c++14 -stdlib=libc++' --prefix=$PREFIX --with-arch-suffix=-$LIBNAME --disable-async-updates --enable-pthreads
+cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DDISABLE_ASYNC_UPDATES=1 -DENABLE_PTHREADS=1 -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD="14" -D CMAKE_CXX_FLAGS="-DUSE_KLEE -fcxx-exceptions -stdlib=libc++ -std=c++14 -emit-llvm -flto -c -Xclang -disable-O0-optnone" -D CMAKE_CXX_CREATE_STATIC_LIBRARY="llvm-link <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>" -D CMAKE_CXX_LINK_EXECUTABLE="llvm-link <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> -o <TARGET>" -DCMAKE_LINKER=llvm-link -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_TO_LIB_TARGET_ARCH_DIR=$LIBNAME ..
 echo "Building in first pass, to let the C-Checks pass"
 make --no-print-directory
 echo "changing c compiler flags to also emit bitcode. This is needed as checks (and include path search) fail with this set to on."
-cmake -DCMAKE_C_FLAGS="-emit-llvm" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -D CMAKE_CXX_FLAGS="-DUSE_KLEE -fcxx-exceptions -stdlib=libc++ -std=c++17 -emit-llvm -flto -c -Xclang -disable-O0-optnone" -D CMAKE_CXX_CREATE_STATIC_LIBRARY="llvm-link <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>" -D CMAKE_CXX_LINK_EXECUTABLE="llvm-link <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> -o <TARGET>" -DCMAKE_LINKER=llvm-link -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_TO_LIB_TARGET_ARCH_DIR=$LIBNAME ..
-#cmake -D CMAKE_C_COMPILER=clang -D CMAKE_C_COMPILER_WORKS=1 -DCMAKE_C_FLAGS='-emit-llvm' -DCMAKE_LINKER=$(which llvm-link) -DCMAKE_C_LINK_FLAGS="" -D CMAKE_C_CREATE_STATIC_LIBRARY="llvm-link <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> -o <TARGET>" -D CMAKE_C_LINK_EXECUTABLE="llvm-link <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> -o <TARGET>" -DCMAKE_CXX_COMPILER=clang++ -D CMAKE_CXX_FLAGS="-DUSE_KLEE -fcxx-exceptions -stdlib=libc++ -std=c++17 -emit-llvm -flto -c -Xclang -disable-O0-optnone" -D CMAKE_CXX_CREATE_STATIC_LIBRARY="llvm-link <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>" -D CMAKE_CXX_LINK_EXECUTABLE="llvm-link -only-needed <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> -o <TARGET>" -DCMAKE_LINKER=llvm-link -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_TO_LIB_TARGET_ARCH_DIR=$LIBNAME ..
+cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DDISABLE_ASYNC_UPDATES=1 -DENABLE_PTHREADS=1 -DCMAKE_C_FLAGS="-emit-llvm" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_STANDARD="14" -DCMAKE_CXX_COMPILER=clang++ -D CMAKE_CXX_FLAGS="-DUSE_KLEE -fcxx-exceptions -stdlib=libc++ -std=c++14 -emit-llvm -flto -c -Xclang -disable-O0-optnone" -D CMAKE_CXX_CREATE_STATIC_LIBRARY="llvm-link <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>" -D CMAKE_CXX_LINK_EXECUTABLE="llvm-link <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> -o <TARGET>" -DCMAKE_LINKER=llvm-link -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_TO_LIB_TARGET_ARCH_DIR=$LIBNAME ..
+#cmake -D CMAKE_C_COMPILER=clang -D CMAKE_C_COMPILER_WORKS=1 -DCMAKE_C_FLAGS='-emit-llvm' -DCMAKE_LINKER=$(which llvm-link) -DCMAKE_C_LINK_FLAGS="" -D CMAKE_C_CREATE_STATIC_LIBRARY="llvm-link <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> -o <TARGET>" -D CMAKE_C_LINK_EXECUTABLE="llvm-link <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> -o <TARGET>" -DCMAKE_CXX_COMPILER=clang++ -D CMAKE_CXX_FLAGS="-DUSE_KLEE -fcxx-exceptions -stdlib=libc++ -std=c++14 -emit-llvm -flto -c -Xclang -disable-O0-optnone" -D CMAKE_CXX_CREATE_STATIC_LIBRARY="llvm-link <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>" -D CMAKE_CXX_LINK_EXECUTABLE="llvm-link -only-needed <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> -o <TARGET>" -DCMAKE_LINKER=llvm-link -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_TO_LIB_TARGET_ARCH_DIR=$LIBNAME ..
 make --no-print-directory -j$(nproc) || echo "Ignore Errors, as some ASM files can't be built in bytecode"
 cd src
 set -x # enable echo
@@ -58,7 +58,7 @@ if [ -f $INSTALLDIR/libsystemc.so.bc ]; then
 	rm $INSTALLDIR/libsystemc.so.bc
 fi
 ln -sT $INSTALLDIR/libsystemc.so{,.bc}
-cd $SOURCEFOLDER 
+cd $SOURCEFOLDER
 
 echo "Now building with WLLVM"
 LIBNAME=wllvm
@@ -66,7 +66,7 @@ INSTALLDIR=$PREFIX/lib-$LIBNAME
 
 mkdir -p $LIBNAME-build && cd $LIBNAME-build
 export LLVM_COMPILER=clang
-../configure --quiet CC=wllvm CXX=wllvm++ --prefix="$PREFIX" --build=x86_64-pc-linux-gnu --enable-debug  CXXFLAGS='-std=c++17' --with-arch-suffix=-wllvm #--enable-shared=NO --enable-static=YES
+../configure --quiet CC=wllvm CXX=wllvm++ --prefix="$PREFIX" --build=x86_64-pc-linux-gnu --enable-debug CXXFLAGS='-std=c++14 -stdlib=libc++' --with-arch-suffix=-wllvm --disable-async-updates --enable-pthreads #--enable-shared=NO --enable-static=YES
 make -j$(nproc) --no-print-directory install
 
 cd $INSTALLDIR

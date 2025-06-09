@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.5)
 
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra ${CMAKE_CXX_FLAGS}")
 # "-fsanitize=memory -fsanitize-memory-track-origins=2 -fno-omit-frame-pointer"
 set(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=address -fno-omit-frame-pointer -g -O1")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")

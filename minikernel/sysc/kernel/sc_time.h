@@ -24,14 +24,14 @@ namespace sc_core
 		SC_SEC
 	};
 
-	extern sc_time_unit default_time_unit;
+	extern sc_time_unit default_time_unit; //= SC_US;
 
 	std::string unit_to_string(const sc_time_unit& unit);
 	uint64_t to_factor(const sc_time_unit unit);
 	double factor_diff(const sc_time_unit from, const sc_time_unit to);
 	uint64_t abs_factor_diff(const sc_time_unit a, const sc_time_unit b);
-    inline sc_time_unit biggest_unit(const sc_time_unit a, const sc_time_unit b);
-    inline sc_time_unit smallest_unit(const sc_time_unit a, const sc_time_unit b);
+	inline sc_time_unit biggest_unit(const sc_time_unit a, const sc_time_unit b);
+	inline sc_time_unit smallest_unit(const sc_time_unit a, const sc_time_unit b);
 
 	struct sc_time
 	{
@@ -40,49 +40,53 @@ namespace sc_core
 		sc_time() : m_time(0),m_unit(default_time_unit){};
 		sc_time(uint64_t time, sc_time_unit unit) : m_time(time),m_unit(unit){};
 
-	    // assignment operator
+		// assignment operator
 
-	    //sc_time& operator = ( const sc_time& );
-
-
-	    // conversion functions
-
-	    uint64_t value() const;      // relative to the time resolution
-	    double to_double() const;  // relative to the time resolution
-	    double to_default_time_units() const;
-	    uint64_t to_smaller_unit(const sc_time_unit other) const;
-	    double to_seconds() const;
-	    const std::string to_string() const;
+		//sc_time& operator = ( const sc_time& );
 
 
-	    // relational operators
+		// conversion functions
 
-	    bool operator == ( const sc_time& ) const;
-	    bool operator != ( const sc_time& ) const;
-	    bool operator <  ( const sc_time& ) const;
-	    bool operator <= ( const sc_time& ) const;
-	    bool operator >  ( const sc_time& ) const;
-	    bool operator >= ( const sc_time& ) const;
+		uint64_t value() const;      // relative to the time resolution
+		double to_double() const;  // relative to the time resolution
+		double to_default_time_units() const;
+		uint64_t to_smaller_unit(const sc_time_unit other) const;
+		double to_seconds() const;
+		const std::string to_string() const;
+
+		static sc_time from_value( uint64_t );
+
+		// relational operators
+
+		bool operator == ( const sc_time& ) const;
+		bool operator != ( const sc_time& ) const;
+		bool operator <  ( const sc_time& ) const;
+		bool operator <= ( const sc_time& ) const;
+		bool operator >  ( const sc_time& ) const;
+		bool operator >= ( const sc_time& ) const;
 
 
-	    // arithmetic operators
+		// arithmetic operators
 
-	    sc_time& operator += ( const sc_time& );
-	    sc_time& operator -= ( const sc_time& );
+		sc_time& operator += ( const sc_time& );
+		sc_time& operator -= ( const sc_time& );
 
-	    friend const sc_time operator + ( const sc_time&, const sc_time& );
-	    friend const sc_time operator - ( const sc_time&, const sc_time& );
+		friend const sc_time operator + ( const sc_time&, const sc_time& );
+		friend const sc_time operator - ( const sc_time&, const sc_time& );
 
-	    sc_time& operator *= ( double );
-	    sc_time& operator /= ( double );
-	    sc_time& operator %= ( const sc_time& );
+		sc_time& operator *= ( double );
+		sc_time& operator /= ( double );
+		sc_time& operator %= ( const sc_time& );
 
-	    friend const sc_time operator * ( const sc_time&, double );
-	    friend const sc_time operator * ( double, const sc_time& );
-	    friend const sc_time operator / ( const sc_time&, double );
-	    friend double        operator / ( const sc_time&, const sc_time& );
-	    friend const sc_time operator % ( const sc_time&, const sc_time& );
+		friend const sc_time operator * ( const sc_time&, double );
+		friend const sc_time operator * ( double, const sc_time& );
+		friend const sc_time operator / ( const sc_time&, double );
+		friend double        operator / ( const sc_time&, const sc_time& );
+		friend const sc_time operator % ( const sc_time&, const sc_time& );
 	};
 
+	const sc_time SC_ZERO_TIME = sc_time();
+
+	extern sc_time sc_get_time_resolution();
 
 };
